@@ -1,7 +1,6 @@
 package com.edzo.signer.services;
 
 import org.springframework.stereotype.Service;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -15,6 +14,7 @@ import xades4j.production.SignedDataObjects;
 import xades4j.production.XadesSigner;
 import xades4j.properties.DataObjectDesc;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,28 +29,20 @@ import xades4j.production.XadesBesSigningProfile;
 import xades4j.providers.KeyingDataProvider;
 import xades4j.providers.impl.DirectKeyingDataProvider;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 @Service
 @RequiredArgsConstructor
 public class SignerService {
 
   private final FilesUtil filesUtil;
 
-  public byte[] sign(Document doc, String keyStorePath, String keyStorePassword)
+  public String sign(String xmlString, String keyStorePath, String keyStorePassword)
       throws Exception {
-    DataObjectReference dataObjectReference = new DataObjectReference("#comprobante");
-    DataObjectDesc signatureObject = dataObjectReference.withTransform(new EnvelopedSignatureTransform());
-    SignedDataObjects signedDataObjects = new SignedDataObjects(signatureObject);
+    // Convertir el string XML a Document
+    Document doc = parseXmlString(xmlString);
 
-    Element signatureParent = doc.getDocumentElement();
-
-    XadesSigner signer = getSigner(keyStorePath, keyStorePassword);
-    signer.sign(signedDataObjects, signatureParent);
-
-    return filesUtil.convertToByteArray(doc);
-  }
-
-  public String sign(String xml, String keyStorePath, String keyStorePassword) throws Exception {
-    Document doc = filesUtil.parseXmlString(xml);
     DataObjectReference dataObjectReference = new DataObjectReference("#comprobante");
     DataObjectDesc signatureObject = dataObjectReference.withTransform(new EnvelopedSignatureTransform());
     SignedDataObjects signedDataObjects = new SignedDataObjects(signatureObject);
@@ -114,5 +106,28 @@ public class SignerService {
       throw new KeyStoreException("Failed to obtain certificate from keystore.");
 
     return certificate;
+  }
+
+  private Document parseXmlString(String xmlString) throws Exception {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setNamespaceAware(true);
+    factory.setValidating(false);
+    factory.setFeature("http://xml.org/sax/features/namespaces", false);
+    factory.setFeature("http://xml.org/sax/features/validation", false);
+    factory.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+    factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+    DocumentBuilder builder = factory.newDocumentBuilder();
+
+    ByteArrayInputStream input = new ByteArrayInputStream(xmlString.getBytes("UTF-8"));
+    Document doc = builder.parse(input);
+
+    // Configurar el atributo id como ID válido
+    Element rootElement = doc.getDocumentElement();
+    if (rootElement.hasAttribute("id")) {
+      rootElement.setIdAttribute("id", true);
+    }
+
+    return doc;
   }
 }

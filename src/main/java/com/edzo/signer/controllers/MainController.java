@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.edzo.signer.DTOs.SignRequest;
-import com.edzo.signer.DTOs.SignResponse;
 import com.edzo.signer.services.SignerService;
 
 import lombok.RequiredArgsConstructor;
@@ -28,27 +26,27 @@ public class MainController {
   private String keystorePassword;
 
   @PostMapping("/sign-xml")
-  public ResponseEntity<SignResponse> sign(@RequestBody SignRequest request,
+  public ResponseEntity<String> sign(@RequestBody String invoice,
       @RequestHeader("X-Internal-Secret") String secret) {
 
     if (secret == null || !secret.equals(internalSecret)) {
       return ResponseEntity.status(403)
-          .body(SignResponse.error("Acceso no autorizado"));
+          .body("Acceso no autorizado");
     }
 
-    if (request.getXmlData() == null || request.getXmlData().isEmpty()) {
+    if (invoice == null || invoice.isEmpty()) {
       return ResponseEntity.badRequest()
-          .body(SignResponse.error("El campo 'xmlData' no puede estar vacío"));
+          .body("El campo 'xmlData' no puede estar vacío");
     }
 
     try {
-      String signedXml = signerService.sign(request.getXmlData(), "signature.p12", "password");
+      String signedXml = signerService.sign(invoice, "signature.p12", keystorePassword);
 
-      return ResponseEntity.ok(SignResponse.success(signedXml));
+      return ResponseEntity.ok(signedXml);
 
     } catch (Exception e) {
       return ResponseEntity.status(500)
-          .body(SignResponse.error("Error interno al firmar: " + e.getMessage()));
+          .body("Error interno al firmar: " + e.getMessage());
     }
   }
 

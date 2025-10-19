@@ -2,8 +2,6 @@ package com.edzo.signer.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
-import java.io.StringReader;
-
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -12,12 +10,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 
 @Component
 public class FilesUtil {
@@ -45,15 +39,6 @@ public class FilesUtil {
     transformer.transform(source, result);
 
     return writer.toString();
-  }
 
-  public Document parseXmlString(String xml) throws Exception {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    factory.setNamespaceAware(true);
-    DocumentBuilder builder = factory.newDocumentBuilder();
-    try (StringReader sr = new StringReader(xml)) {
-      InputSource is = new InputSource(sr);
-      return builder.parse(is);
-    }
   }
 }
