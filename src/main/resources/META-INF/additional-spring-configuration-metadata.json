@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "signer.internal.secret",
+      "type": "java.lang.String",
+      "description": "The internal secret for the signer service"
+    }
+  ]
+}
