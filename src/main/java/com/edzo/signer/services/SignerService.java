@@ -7,7 +7,6 @@ import org.w3c.dom.Element;
 import com.edzo.signer.utils.FilesUtil;
 
 import lombok.RequiredArgsConstructor;
-
 import xades4j.algorithms.EnvelopedSignatureTransform;
 import xades4j.production.DataObjectReference;
 import xades4j.production.SignedDataObjects;
@@ -52,7 +51,8 @@ public class SignerService {
     XadesSigner signer = getSigner(keyStorePath, keyStorePassword);
     signer.sign(signedDataObjects, signatureParent);
 
-    return filesUtil.convertToString(doc);
+    String signedXml = filesUtil.convertToString(doc);
+    return signedXml;
   }
 
   private XadesSigner getSigner(String keyStorePath, String keyStorePassword) throws Exception {
