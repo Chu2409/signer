@@ -1,0 +1,11 @@
+services:
+  signer:
+    image: signer-micro
+    container_name: signer-micro
+    ports:
+      - "8081:8080"
+    env_file:
+      - ./.env
+    volumes:
+      - ./signature.p12:/certificado/signature.p12:ro
+    restart: always

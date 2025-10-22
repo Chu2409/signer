@@ -1,0 +1,25 @@
+# Archivos y carpetas de Git
+.git
+.gitignore
+
+# Archivos de Maven
+target/
+.mvn/
+mvnw
+mvnw.cmd
+
+# Archivos del IDE
+.idea/
+.vscode/
+*.iml
+
+# Logs
+logs/
+*.log
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+```
+
+.p12
