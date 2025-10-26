@@ -14,9 +14,13 @@ import xades4j.production.XadesSigner;
 import xades4j.properties.DataObjectDesc;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -68,12 +72,21 @@ public class SignerService {
     return profile.newSigner();
   }
 
-  private InputStream getInputStream(String path) throws FileNotFoundException {
-    InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path);
-    if (inputStream == null)
-      throw new FileNotFoundException("The file was not found in the classpath: " + path);
+  private InputStream getInputStream(String path) throws IOException {
+    // Primero intenta cargar desde el sistema de archivos
+    Path filePath = Paths.get(path);
+    if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
+      return new FileInputStream(filePath.toFile());
+    }
 
-    return inputStream;
+    // Si no existe, intenta cargar desde el classpath
+    InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path);
+    if (inputStream != null) {
+      return inputStream;
+    }
+
+    // Si no se encuentra en ningún lugar, lanza excepción
+    throw new FileNotFoundException("The file was not found in filesystem or classpath: " + path);
   }
 
   private KeyStore loadKeyStore(InputStream keyStoreStream, String keyStorePassword)
