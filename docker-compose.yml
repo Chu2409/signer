@@ -1,9 +1,9 @@
 services:
-  signer-micro:
-    image: ghcr.io/chu/xml-signer:latest
+  signer:
+    image: ghcr.io/chu2409/signer:latest
 
     # Le damos un nombre de contenedor fijo para encontrarlo
-    container_name: signer-micro
+    container_name: signer
     restart: unless-stopped
 
     # Carga el secreto desde el archivo .env
