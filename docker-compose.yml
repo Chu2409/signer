@@ -1,27 +1,11 @@
 services:
   signer:
-    image: ghcr.io/chu2409/signer:latest
-
-    # Le damos un nombre de contenedor fijo para encontrarlo
-    container_name: signer
-    restart: unless-stopped
-
-    # Carga el secreto desde el archivo .env
+    image: ghcr.io/chu2409/signer
+    container_name: signer-micro
+    ports:
+      - ${SIGNER_PORT}:8080
     env_file:
-      - .env
-
-    # ¡Importante!
-    # NO exponemos 'ports' al host.
-    # Al conectarlo a 'proxy-net', Nginx Proxy Manager lo encontrará
-    # usando su nombre ('xml_signer_svc') y su puerto interno (8080).
-
-    networks:
-      - proxy-net
-
+      - ./.env
     volumes:
       - ./signature.p12:/certificates/signature.p12:ro
-
-# Declaramos la red externa que ya existe
-networks:
-  proxy-net:
-    external: true
+    restart: always
