@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - develop
 
 jobs:
   build-and-push:
@@ -15,6 +16,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set environment variables
+        id: vars
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "IMAGE_TAG=latest" >> $GITHUB_OUTPUT
+          else
+            echo "IMAGE_TAG=dev" >> $GITHUB_OUTPUT
+          fi
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -29,13 +39,13 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          # ¡Asegúrate de que esta etiqueta coincida con la que usa tu contenedor!
-          tags: ghcr.io/chu2409/signer:latest
+          tags: ghcr.io/chu2409/signer:${{ steps.vars.outputs.IMAGE_TAG }}
 
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
 
     steps:
-      - name: Trigger Portainer Webhook (Signer Service)
+      - name: Trigger Portainer Webhook
         run: curl -s -X POST ${{ secrets.PORTAINER_WEBHOOK_SIGNER }}
