@@ -3,7 +3,9 @@ services:
     build: .
     container_name: signer-micro
     env_file:
-      - .env.local
+      - .env
+    ports:
+      - 8080:8080
     volumes:
       - ./signature.p12:/certificates/signature.p12:ro
     restart: always
