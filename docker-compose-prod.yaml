@@ -1,3 +1,4 @@
+# docker compose --env-file .env.production -f docker-compose-prod.yaml up -d
 services:
   signer:
     image: ghcr.io/chu2409/signer
@@ -12,4 +13,5 @@ services:
 
 networks:
   shared-network:
+    name: shared-network
     external: true
