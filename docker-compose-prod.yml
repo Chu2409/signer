@@ -2,10 +2,14 @@ services:
   signer:
     image: ghcr.io/chu2409/signer
     container_name: signer-micro
-    ports:
-      - ${SIGNER_PORT}:8080
     env_file:
       - ./.env
     volumes:
       - ./signature.p12:/certificates/signature.p12:ro
     restart: always
+    networks:
+      - shared-network  
+
+networks:
+  shared-network:
+    external: true
