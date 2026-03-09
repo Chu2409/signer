@@ -34,4 +34,6 @@ build/
 
 *.p12
 .env
-test
+.env.local
+.env.production
+.env.dev

@@ -1,0 +1,17 @@
+# docker compose --env-file .env.production -f docker-compose-prod.yaml up -d
+services:
+  signer:
+    image: ghcr.io/chu2409/signer
+    container_name: signer-micro
+    env_file:
+      - .env.production
+    volumes:
+      - ./signature.p12:/certificates/signature.p12:ro
+    restart: always
+    networks:
+      - shared-network  
+
+networks:
+  shared-network:
+    name: shared-network
+    external: true
