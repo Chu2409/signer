@@ -1,0 +1,17 @@
+# docker compose --env-file .env.local -f docker-compose-local.yaml up -d
+services:
+  signer:
+    build: .
+    container_name: signer-micro
+    env_file:
+      - .env.local
+    volumes:
+      - ./signature.p12:/certificates/signature.p12:ro
+    restart: always
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    name: shared-network
+    external: true
