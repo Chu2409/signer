@@ -41,11 +41,12 @@ jobs:
           push: true
           tags: ghcr.io/chu2409/signer:${{ steps.vars.outputs.IMAGE_TAG }}
 
-  deploy:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
+  # Despliegue a Portainer desactivado mientras el servidor no está activo
+  # deploy:
+  #   needs: build-and-push
+  #   runs-on: ubuntu-latest
+  #   environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
 
-    steps:
-      - name: Trigger Portainer Webhook
-        run: curl -s -X POST ${{ secrets.PORTAINER_WEBHOOK_SIGNER }}
+  #   steps:
+  #     - name: Trigger Portainer Webhook
+  #       run: curl -s -X POST ${{ secrets.PORTAINER_WEBHOOK_SIGNER }}
